@@ -4,41 +4,36 @@ import matplotlib.pyplot as plt
 
 st.set_page_config(page_title="Synergy Analyzer", layout="wide")
 
-st.title("🤝 ML-Based Framework for Enhancing Inter-Organizational Synergy")
-st.write("This dashboard visualizes collaboration efficiency and bottlenecks identified by the ML system.")
+st.title("📁 Synergy Analyzer – CSV File Uploader")
 
-# Load data
-@st.cache_data
-def load_data():
-    return pd.read_csv("synergy_analysis_results.csv")
+# CSV upload box
+uploaded_file = st.file_uploader("Upload your CSV file", type=["csv"])
 
-data = load_data()
+if uploaded_file is not None:
+    # Read uploaded CSV
+    df = pd.read_csv(uploaded_file)
 
-# Display data
-st.subheader("📊 Collaboration Analysis Data")
-st.dataframe(data)
+    st.subheader("📄 Preview of Uploaded Data")
+    st.dataframe(df)
 
-# Summary stats
-st.subheader("📈 Summary Statistics")
-st.write(data.describe())
+    st.subheader("📊 Statistical Summary")
+    st.write(df.describe())
 
-# Bottleneck Analysis
-bottlenecks = data[data["bottleneck_flag"] == "Bottleneck"]
-st.subheader("🚨 Bottleneck Organizations")
-st.dataframe(bottlenecks)
+    # Find numeric columns
+    numeric_cols = df.select_dtypes(include=['int64', 'float64']).columns.tolist()
 
-# Visualization
-st.subheader("📉 Project Delays by Organization")
-fig, ax = plt.subplots()
-ax.bar(data["organization"], data["project_delay_days"], color="skyblue")
-ax.set_xlabel("Organization")
-ax.set_ylabel("Delay (Days)")
-ax.set_title("Project Delays by Organization")
-st.pyplot(fig)
+    if numeric_cols:
+        st.subheader("📈 Visualization")
+        selected_col = st.selectbox("Select a numeric column to plot:", numeric_cols)
 
-# Recommendations
-st.subheader("💡 AI Recommendations")
-for index, row in bottlenecks.iterrows():
-    st.markdown(f"**{row['organization']}** → {row['recommendation']}")
+        fig, ax = plt.subplots()
+        ax.plot(df[selected_col])
+        ax.set_title(f"Line Chart of {selected_col}")
+        ax.set_xlabel("Index")
+        ax.set_ylabel(selected_col)
 
-st.success("✅ Analysis complete.")
+        st.pyplot(fig)
+    else:
+        st.info("No numeric columns available for plotting.")
+else:
+    st.warning("Please upload a CSV file to proceed.")
