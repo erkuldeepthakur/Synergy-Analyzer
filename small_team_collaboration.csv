@@ -1,0 +1,6 @@
+organization,message_delay,handoff_count,response_rate,conflict_reports,project_delay_days
+Org A,2.1,3,90,0,1
+Org B,3.4,4,85,1,2
+Org C,1.9,2,92,0,1
+Org A,4.0,5,88,1,3
+Org B,2.8,3,93,0,2
